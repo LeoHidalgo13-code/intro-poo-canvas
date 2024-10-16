@@ -14,17 +14,22 @@ class Ball {
         this.speedX = speedX * 2; // Velocidad X aumentada (pelotas más rápidas)
         this.speedY = speedY * 2; // Velocidad Y aumentada (pelotas más rápidas)
         this.color = color;
+        this.visible = true; // Nueva propiedad para controlar la visibilidad
     }
 
     draw() {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = this.color;
-        ctx.fill();
-        ctx.closePath();
+        if (this.visible) {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = this.color;
+            ctx.fill();
+            ctx.closePath();
+        }
     }
 
     move() {
+        if (!this.visible) return;
+
         this.x += this.speedX;
         this.y += this.speedY;
 
@@ -37,11 +42,26 @@ class Ball {
         if (this.x - this.radius <= 0 || this.x + this.radius >= canvas.width) {
             this.speedX = -this.speedX;
         }
+
+        // Desaparición al llegar a los bordes izquierdo o derecho
+        if (this.x - this.radius <= 0 || this.x + this.radius >= canvas.width) {
+            this.disappear(); // Llama a la función desaparecer
+        }
+    }
+
+    disappear() {
+        this.visible = false; // Hacer que la pelota desaparezca
+
+        // Restablecer después de 3 segundos
+        setTimeout(() => {
+            this.reset();
+        }, 3000);
     }
 
     reset() {
         this.x = canvas.width / 2;
         this.y = canvas.height / 2;
+        this.visible = true; // Hacer que la pelota reaparezca
         this.speedX = -this.speedX; // Cambia dirección al resetear
     }
 }
